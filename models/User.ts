@@ -1,13 +1,34 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+export interface ITrustHistory {
+  score: number;
+  reason: string;
+  date: Date;
+}
+
+export interface IBehavioralData {
+  monthlyIncome: number;
+  avgTransactionAmount: number;
+  repaymentRate: number;
+  latePayments: number;
+  accountAgeMonths: number;
+  totalTransactions: number;
+}
+
 export interface IUser extends Document {
-  _id: string;
   name: string;
   email: string;
   password: string;
   phone?: string;
   trustScore: number;
+  trustHistory: ITrustHistory[];
+  lastStatementUploadedAt?: Date;
+  totalLoansTaken: number;
+  totalLoansRepaid: number;
+  onTimeRepayments: number;
+  totalLent: number;
+  behavioralData?: IBehavioralData;
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -47,6 +68,40 @@ const UserSchema = new Schema<IUser>(
       default: 50, // Initial trust score
       min: 0,
       max: 100,
+    },
+    trustHistory: [
+      {
+        score: { type: Number, required: true },
+        reason: { type: String, required: true },
+        date: { type: Date, default: Date.now },
+      },
+    ],
+    lastStatementUploadedAt: {
+      type: Date,
+    },
+    totalLoansTaken: {
+      type: Number,
+      default: 0,
+    },
+    totalLoansRepaid: {
+      type: Number,
+      default: 0,
+    },
+    onTimeRepayments: {
+      type: Number,
+      default: 0,
+    },
+    totalLent: {
+      type: Number,
+      default: 0,
+    },
+    behavioralData: {
+      monthlyIncome: { type: Number },
+      avgTransactionAmount: { type: Number },
+      repaymentRate: { type: Number },
+      latePayments: { type: Number },
+      accountAgeMonths: { type: Number },
+      totalTransactions: { type: Number },
     },
     isVerified: {
       type: Boolean,
